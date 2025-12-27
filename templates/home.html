@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Home</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+        min-height: 100vh;
+        font-family: "Segoe UI", sans-serif;
+        padding: 20px;
+      }
+
+      .navbar {
+        background-color: #f3e5f5 !important;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+      }
+
+      .btn-primary {
+        background-color: #9c27b0;
+        border: none;
+        transition: 0.3s;
+      }
+
+      .btn-primary:hover {
+        background-color: #7b1fa2;
+        transform: scale(1.05);
+      }
+
+      .glass-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 18px;
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      .carousel img {
+        border-radius: 18px;
+      }
+
+      textarea {
+        border-radius: 12px !important;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg px-3 mb-4">
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-dark" href="#">
+          <img
+            src="{{ url_for('static', filename='images/istockphoto-1317041454-612x612.jpg') }}"
+            width="30"
+            height="24"
+            class="d-inline-block align-text-top"
+          />
+          Emotion Care
+        </a>
+
+        <div class="collapse navbar-collapse">
+          <ul class="navbar-nav ms-auto d-flex gap-3">
+            <li class="nav-item">
+              <button class="btn btn-lg btn-primary" onclick="goTo('home')">Home</button>
+            </li>
+            <li class="nav-item">
+              <button class="btn btn-lg btn-primary" onclick="goTo('detect')">Detect</button>
+            </li>
+            <li class="nav-item">
+              <button class="btn btn-lg btn-primary" onclick="goTo('chatbot')">Chatbot</button>
+            </li>
+            <li class="nav-item">
+              <button class="btn btn-lg btn-primary" onclick="goTo('resources')">Resources</button>
+            </li>
+            <li class="nav-item">
+              <button class="btn btn-lg btn-primary" onclick="goToPosts()">All Posts</button>
+            </li>
+      
+            <!-- New Authentication buttons -->
+    {% if session.get('user_id') %}
+      <li class="nav-item">
+        <a href="{{ url_for('logout') }}" class="btn btn-lg btn-primary">Logout</a>
+      </li>
+    {% else %}
+      <li class="nav-item">
+        <a href="{{ url_for('signup') }}" class="btn btn-lg btn-primary">Sign Up</a>
+      </li>
+      <li class="nav-item">
+        <a href="{{ url_for('login') }}" class="btn btn-lg btn-primary">Login</a>
+      </li>
+    {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div class="row g-4">
+
+      <!-- LEFT CAROUSEL CARD -->
+      <div class="col-sm-6">
+        <div class="glass-card p-2" style="height: 420px;">
+          <div
+            id="carouselExampleAutoplaying"
+            class="carousel slide h-100"
+            data-bs-ride="carousel"
+            data-bs-interval="2000"
+          >
+            <div class="carousel-inner h-100">
+              <div class="carousel-item active h-100">
+                <img src="{{ url_for('static', filename='images/88191-mental-health-google-slides-theme.png') }}"
+                     class="d-block w-100 h-100"
+                     style="object-fit: cover" />
+              </div>
+
+              <div class="carousel-item h-100">
+                <img src="{{ url_for('static', filename='images/jpg.avif') }}"
+                     class="d-block w-100 h-100"
+                     style="object-fit: cover" />
+              </div>
+
+              <div class="carousel-item h-100">
+                <img src="{{ url_for('static', filename='images/mental-health-at-work-mc-slide1_6.png') }}"
+                     class="d-block w-100 h-100"
+                     style="object-fit: cover" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT SHARE CARD -->
+     <!-- RIGHT CARD: Create Post Button -->
+<div class="col-sm-6">
+  <div class="glass-card p-4 d-flex flex-column justify-content-center text-center" style="height: 420px;">
+    <h4 class="fw-bold text-dark">🌼 What's On Your Mind?</h4>
+    <button onclick="sharePost()" class="btn btn-primary btn-lg mt-4">Create Post</button>
+  </div>
+</div>
+
+
+<!-- BOTTOM STATUS CARD -->
+<div class="glass-card p-5 mt-4 d-flex align-items-center justify-content-between flex-wrap" style="font-size: 1.1rem;">
+  <div>
+    <h4 class="fw-bold text-dark">🧠 Mood Tracker</h4>
+    <p class="text-muted mb-0">Track your emotions daily and understand your mental health trends.</p>
+  </div>
+  <div>
+    <a href="{{ url_for('mood_tracker') }}" class="btn btn-primary btn-lg mt-2 mt-sm-0 px-4 py-3">
+      View Mood Tracker
+    </a>
+  </div>
+</div>
+
+
+
+
+
+
+    <script>
+       const routes = {
+    home: "{{ url_for('home') }}",
+    detect: "{{ url_for('detect') }}",
+    chatbot: "{{ url_for('chatbot') }}",
+    resources: "{{ url_for('resources') }}",
+  
+  };
+
+  function goTo(page) {
+    window.location.href = routes[page];
+  }
+
+  function goToPosts() {
+    // Redirect to /posts
+    window.location.href = "{{ url_for('show_posts') }}";
+  }
+
+  function sharePost() {
+    {% if session.get('user_id') %}
+      // User is logged in → go to create_post page
+      window.location.href = "{{ url_for('create_post') }}";
+    {% else %}
+      // User not logged in → alert and go to login
+      alert("Please login first to share your thoughts!");
+      window.location.href = "{{ url_for('login') }}";
+    {% endif %}
+}
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

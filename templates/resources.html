@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resources</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      body {
+        background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+        min-height: 100vh;
+        padding: 30px;
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      .main-card {
+        max-width: 1100px;
+        margin: auto;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+      }
+
+      h4 {
+        font-weight: 700;
+        color: #6a1b9a;
+      }
+
+      .post-card {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        border-left: 6px solid #9c27b0;
+        animation: fadeIn 0.7s ease-in-out;
+      }
+
+      .post-card img {
+        max-width: 100%;
+        border-radius: 10px;
+        margin-top: 10px;
+      }
+
+      .post-meta {
+        font-size: 0.85rem;
+        color: #555;
+        margin-bottom: 10px;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity:1; transform: translateY(0); }
+      }
+
+      .tip-icon {
+        color: #9c27b0;
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+
+  <body>
+
+<section>
+  <div class="main-card">
+
+    <div class="d-flex justify-content-between align-items-center">
+      <h4>🌿 Resources, Tips & Shared Thoughts</h4>
+      <a href="{{ url_for('home') }}" class="btn btn-sm btn-outline-secondary px-3">← Back</a>
+    </div>
+   
+   <hr class="my-4">
+
+    <!-- Tips Section -->
+    <h5 class="text-dark">✨ Quick Wellness Tips</h5>
+    <ul>
+      <li><span class="tip-icon">💜</span>Take 5 deep breaths slowly.</li>
+      <li><span class="tip-icon">🚶‍♂️</span>Stretch or take a tiny walk.</li>
+      <li><span class="tip-icon">💧</span>Stay hydrated—drink some water.</li>
+      <li><span class="tip-icon">📝</span>Write 3 things you're grateful for.</li>
+    </ul>
+
+    <hr>
+
+    <!-- Meditation Video -->
+    <h5 class="text-dark">🎧 Guided Meditation</h5>
+    <div class="ratio ratio-16x9">
+      <iframe 
+        src="https://www.youtube.com/embed/inpok4MKVLM" 
+        allowfullscreen>
+      </iframe>
+    </div>
+
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

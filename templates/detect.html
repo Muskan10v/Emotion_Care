@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Emotion Detection</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      body {
+        background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 30px;
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      /* ⭐ Bigger main container */
+      .main-card {
+        max-width: 1200px;       /* increased size */
+        width: 100%;
+        margin: auto;
+        border-radius: 20px;
+        padding: 40px;           /* increased padding */
+        background: #ffffff;
+        box-shadow: 0px 10px 30px rgba(0,0,0,0.15);
+      }
+
+      .btn-primary,.btn-success {
+        background-color: #9c27b0;
+        border: none;
+      }
+      .btn-primary:hover {
+        background-color: #7b1fa2;
+      }
+
+      .result-emoji {
+        font-size: 70px;       /* slightly bigger emoji */
+      }
+
+      .subtle-text {
+        color: #777;
+        font-size: 14px;
+      }
+
+      .back-btn {
+        border-radius: 30px;
+      }
+
+      .preview-img {
+        max-width: 100%;
+        border-radius: 12px;
+        display: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+
+      ul li {
+        margin-bottom: 6px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="main-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h3 class="fw-bold">🎯 Emotion Detection</h3>
+          <div class="subtle-text">Upload an image to detect emotion (Demo mode).</div>
+        </div>
+        <a href="{{ url_for('home') }}" class="btn btn-outline-secondary btn-sm back-btn px-3">← Back</a>
+      </div>
+
+      <hr>
+
+      <div class="row g-4 align-items-start">
+
+        <!-- Upload Section -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Upload Image</label>
+          <input class="form-control" type="file" accept="image/*" id="input-image">
+
+          <img id="preview" class="preview-img mt-3">
+
+          <button class="btn btn-primary mt-3 w-100" id="btn-analyze">🔍 Analyze Emotion</button>
+          <!-- Camera Section -->
+<button class="btn btn-secondary mt-3 w-100" id="btn-camera">📷 Open Camera</button>
+
+<div class="mt-3" id="camera-box" style="display:none;">
+  <video id="camera-stream" width="100%" autoplay style="border-radius:12px;"></video>
+  <button class="btn btn-warning mt-2 w-100" id="btn-capture">📸 Capture Photo</button>
+</div>
+
+<canvas id="canvas" style="display:none;"></canvas>
+
+        </div>
+
+
+        <!-- Result Section -->
+        <div class="col-md-6">
+          <div class="card p-4 shadow-sm" style="border-radius:18px;">
+            <div class="text-center">
+              <div id="result-emoji" class="result-emoji">—</div>
+              <h4 id="result-emotion" class="fw-bold">No Result</h4>
+              <div class="subtle-text" id="result-confidence">Confidence: —</div>
+            </div>
+
+            <hr>
+
+            <h6 class="fw-semibold">Recommendations</h6>
+            <ul id="rec-list" class="mb-2"></ul>
+
+            <a href="{{ url_for('chatbot') }}" class="btn btn-success w-100 mt-2">💬 Talk with Chatbot</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+     document.getElementById("btn-analyze").addEventListener("click", async function () {
+  const input = document.getElementById("input-image");
+  if (!input.files[0]) {
+    alert("Please select an image first.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("image", input.files[0]);
+
+  const res = await fetch("/detect", { method: "POST", body: formData });
+  const data = await res.json();
+
+  const emojiEl = document.getElementById("result-emoji");
+  const emotionEl = document.getElementById("result-emotion");
+  const confEl = document.getElementById("result-confidence");
+  const recEl = document.getElementById("rec-list");
+
+  if (data.success) {
+    const emotion = data.emotion.toLowerCase();
+    const confidence = data.confidence;
+
+    // Map to emoji
+    const emojiMap = {
+      happy: "😄",
+      sad: "😢",
+      angry: "😡",
+      surprise: "😲",
+      fear: "😱",
+      disgust: "🤢",
+      neutral: "😐"
+    };
+
+    // Map to recommendations
+    const recMap = {
+      happy: ["Keep smiling!", "Share your happiness with others."],
+      sad: ["Take a deep breath.", "Talk to a friend."],
+      angry: ["Take a short break.", "Practice deep breathing."],
+      surprise: ["Embrace the surprise!", "Stay curious."],
+      fear: ["Stay calm.", "Think of possible solutions."],
+      disgust: ["Avoid negativity.", "Focus on positive things."],
+      neutral: ["Stay balanced.", "Maintain routine."]
+    };
+
+    emojiEl.textContent = emojiMap[emotion] || "❓";
+    emotionEl.textContent = emotion.charAt(0).toUpperCase() + emotion.slice(1);
+    confEl.textContent = "Confidence: " + confidence + "%";
+
+    recEl.innerHTML = "";
+    if (recMap[emotion]) {
+      recMap[emotion].forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        recEl.appendChild(li);
+      });
+    }
+  } else {
+    emojiEl.textContent = "❌";
+    emotionEl.textContent = "Error";
+    confEl.textContent = data.error || "Something went wrong.";
+    recEl.innerHTML = "";
+  }
+});
+
+
+const cameraBtn = document.getElementById("btn-camera");
+const captureBtn = document.getElementById("btn-capture");
+const video = document.getElementById("camera-stream");
+const canvas = document.getElementById("canvas");
+const cameraBox = document.getElementById("camera-box");
+const preview = document.getElementById("preview");
+
+// Open camera
+cameraBtn.addEventListener("click", async () => {
+  cameraBox.style.display = "block";
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+  } catch (err) {
+    alert("Camera access denied or not available.");
+  }
+});
+
+// Capture photo
+captureBtn.addEventListener("click", () => {
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Convert canvas to image
+  canvas.toBlob(blob => {
+    const file = new File([blob], "captured.jpg", { type: "image/jpeg" });
+
+    // Show preview
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+
+    // Put image into input-image so your existing code works
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    document.getElementById("input-image").files = dataTransfer.files;
+
+    alert("Photo captured! Now click Analyze Emotion.");
+  });
+});
+
+
+    </script>
+  </body>
+</html>
